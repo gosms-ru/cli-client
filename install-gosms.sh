@@ -163,6 +163,19 @@ check_api_key() {
 
 # Исправленная функция выбора языка
 choose_language() {
+    # Выводим логотип перед выбором языка
+    printf "${CYAN}
+╔═══════════════════════════════════════════════════╗
+║                                                   ║
+║  ██████═╗  ██████╗ ███████╗███╗   ███╗███████╗    ║
+║  ██╔════╝ ██╔═══██╗██╔════╝████╗ ████║██╔════╝    ║
+║  ██║  ███╗██║   ██║███████╗██╔████╔██║███████╗    ║
+║  ██║   ██║██║   ██║╚════██║██║╚██╔╝██║╚════██║    ║
+║  ╚██████╔╝╚██████╔╝███████║██║ ╚═╝ ██║███████║    ║
+║   ╚═════╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝╚══════╝    ║
+║                                                   ║
+╚═══════════════════════════════════════════════════╝${NC}\n"
+
     while true; do
         echo ""
         echo -e "${BLUE}Выберите язык / Select language:${NC}"
@@ -196,9 +209,6 @@ request_api_key() {
     local lang=$1
     local config_file=$2
     
-    echo "DEBUG: About to display logo in request_api_key"
-    generate_logo
-    echo "DEBUG: Logo displayed in request_api_key"
     echo ""
     echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
     echo ""
@@ -229,11 +239,6 @@ request_api_key() {
 CONFIG_FILE="$HOME/.gosms.conf"
 
 choose_language
-
-echo "DEBUG: About to display logo in main process"
-generate_logo
-echo "DEBUG: Logo displayed in main process"
-echo ""
 
 echo "language=$LANG" > "$CONFIG_FILE"
 
