@@ -8,7 +8,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Базовый URL репозитория
-REPO_URL="https://raw.githubusercontent.com/your-repo/gosms/main"
+REPO_URL="https://github.com/gosms-ru/cli-client/tree/main"
 
 # Функция для загрузки файла
 download_file() {
