@@ -63,33 +63,13 @@ rm -rf "$TEMP_DIR"
 # Подключаем файл с переводами
 source /usr/local/bin/gosms_translations.sh
 
-# Функция для проверки формата JWT токена
-check_api_key() {
-    local key=$1
-    
-    # Проверяем, что ключ не пустой
-    if [[ -z "$key" ]]; then
-        echo -e "${RED}❌ $(get_text "$LANG" "invalid_api_key")${NC}"
-        return 1
-    fi
-    
-    # Проверяем формат JWT (три части, разделенные точками)
-    if ! [[ "$key" =~ ^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$ ]]; then
-        echo -e "${RED}❌ $(get_text "$LANG" "invalid_api_key")${NC}"
-        return 1
-    fi
-    
-    return 0
-}
-
-# Вывод логотипа
+# Выбор языка
 clear
 echo -e "${CYAN}$(get_text "en" "logo")${NC}"
-
-# Выбор языка
-echo -e "${BLUE}$(get_text "en" "select_language")${NC}"
-echo "1) $(get_text "en" "russian")"
-echo "2) $(get_text "en" "english")"
+echo ""
+echo -e "${BLUE}Выберите язык / Select language:${NC}"
+echo "1) Русский"
+echo "2) English"
 read -p "Выберите номер / Select number (1-2): " lang_choice
 
 case $lang_choice in
@@ -101,6 +81,33 @@ esac
 # Сохраняем выбранный язык в конфигурацию
 CONFIG_FILE="$HOME/.gosms.conf"
 echo "language=$LANG" > "$CONFIG_FILE"
+
+# Функция для проверки формата JWT токена
+check_api_key() {
+    local key=$1
+    
+    # Проверяем, что ключ не пустой
+    if [[ -z "$key" ]]; then
+        if [ "$LANG" = "ru" ]; then
+            echo -e "${RED}❌ Неверный формат API-ключа${NC}"
+        else
+            echo -e "${RED}❌ Invalid API key format${NC}"
+        fi
+        return 1
+    fi
+    
+    # Проверяем формат JWT (три части, разделенные точками)
+    if ! [[ "$key" =~ ^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$ ]]; then
+        if [ "$LANG" = "ru" ]; then
+            echo -e "${RED}❌ Неверный формат API-ключа${NC}"
+        else
+            echo -e "${RED}❌ Invalid API key format${NC}"
+        fi
+        return 1
+    fi
+    
+    return 0
+}
 
 # Вывод инструкций по получению API ключа
 clear
