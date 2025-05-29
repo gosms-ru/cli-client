@@ -116,10 +116,6 @@ rm -rf "$TEMP_DIR"
 # Подключаем файл с переводами
 source /usr/local/bin/gosms_translations.sh
 
-# Выводим логотип (до выбора языка — по умолчанию ru)
-echo -e "${CYAN}$(get_text "ru" "logo")${NC}"
-echo ""
-
 # Функция для проверки формата JWT токена
 check_api_key() {
     local key=$1
@@ -150,7 +146,6 @@ check_api_key() {
 # Исправленная функция выбора языка
 choose_language() {
     while true; do
-        echo -e "${CYAN}$(get_text "ru" "logo")${NC}"
         echo ""
         echo -e "${BLUE}Выберите язык / Select language:${NC}"
         echo "1) Русский"
