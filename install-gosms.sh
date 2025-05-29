@@ -116,6 +116,10 @@ rm -rf "$TEMP_DIR"
 # Подключаем файл с переводами
 source /usr/local/bin/gosms_translations.sh
 
+# Выводим логотип (до выбора языка — по умолчанию ru)
+echo -e "${CYAN}$(get_text "ru" "logo")${NC}"
+echo ""
+
 # Функция для проверки формата JWT токена
 check_api_key() {
     local key=$1
@@ -146,7 +150,7 @@ check_api_key() {
 # Исправленная функция выбора языка
 choose_language() {
     while true; do
-        echo -e "${CYAN}GoSMS CLI${NC}"
+        echo -e "${CYAN}$(get_text "ru" "logo")${NC}"
         echo ""
         echo -e "${BLUE}Выберите язык / Select language:${NC}"
         echo "1) Русский"
@@ -169,24 +173,27 @@ choose_language() {
         fi
         
         case "$lang_choice" in
-            1) 
+            1)
                 LANG="ru"
                 echo -e "${GREEN}✅ Выбран русский язык${NC}"
                 sleep 1
-                break 
+                break
                 ;;
-            2) 
+            2)
                 LANG="en"
                 echo -e "${GREEN}✅ English language selected${NC}"
                 sleep 1
-                break 
+                break
                 ;;
-            *) 
+            *)
                 echo -e "${RED}❌ Неверный выбор. Пожалуйста, выберите 1 или 2${NC}"
                 sleep 1
                 ;;
         esac
     done
+    # После выбора языка — выводим логотип на выбранном языке
+    echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
+    echo ""
 }
 
 # Функция для запроса API ключа
@@ -194,7 +201,7 @@ request_api_key() {
     local lang=$1
     local config_file=$2
     
-    echo -e "${CYAN}GoSMS CLI${NC}"
+    echo -e "${CYAN}$(get_text "ru" "logo")${NC}"
     echo ""
     echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
     echo ""
