@@ -1,0 +1,177 @@
+#!/bin/bash
+
+# Функция для генерации логотипа
+generate_logo() {
+    local logo="
+${CYAN}
+╔═══════════════════════════════════════════════════╗
+║                                                   ║
+║  ██████═╗  ██████╗ ███████╗███╗   ███╗███████╗    ║
+║  ██╔════╝ ██╔═══██╗██╔════╝████╗ ████║██╔════╝    ║
+║  ██║  ███╗██║   ██║███████╗██╔████╔██║███████╗    ║
+║  ██║   ██║██║   ██║╚════██║██║╚██╔╝██║╚════██║    ║
+║  ╚██████╔╝╚██████╔╝███████║██║ ╚═╝ ██║███████║    ║
+║   ╚═════╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝╚══════╝    ║
+║                                                   ║
+╚═══════════════════════════════════════════════════╝${NC}
+"
+    echo "$logo"
+}
+
+# Функция для анимированного логотипа
+animate_logo() {
+    local duration=0.1  # Задержка между сменой цветов в секундах
+    
+    # Очищаем экран
+    clear
+    
+    # Выводим логотип с разными цветами
+    for i in {1..5}; do
+        clear
+        generate_logo
+        sleep $duration
+    done
+    
+    # Финальный вывод в голубом цвете
+    clear
+    echo -e "${CYAN}$(generate_logo)${NC}"
+}
+
+# Русский язык
+declare -A RU=(
+    ["app_name"]="Gosms CLI - утилита для отправки SMS через сервис Gosms.ru"
+    ["usage"]="Использование:"
+    ["commands"]="Команды:"
+    ["send_sms"]="Отправить SMS сообщение"
+    ["edit_settings"]="Редактировать настройки (токен)"
+    ["show_help"]="Показать это сообщение"
+    ["options"]="Опции для sendsms:"
+    ["phone"]="Номер телефона получателя (обязательный)"
+    ["text"]="Текст сообщения (обязательный)"
+    ["device"]="ID устройства (опциональный)"
+    ["sim"]="Номер SIM-карты (опциональный, требует --device)"
+    ["examples"]="Примеры:"
+    ["config"]="Конфигурация:"
+    ["token_stored"]="Токен API хранится в"
+    ["token_edit"]="Для изменения токена используйте команду"
+    ["unknown_param"]="Неизвестный параметр:"
+    ["required_params"]="Ошибка: номер телефона и текст сообщения обязательны"
+    ["token_not_found"]="Токен не найден. Используйте команду gosms --edit для настройки"
+    ["sim_without_device"]="Ошибка: SIM можно указать только вместе с DEVICE"
+    ["settings_updated"]="Настройки успешно обновлены"
+    ["settings_not_changed"]="Настройки не были изменены"
+    ["deps_installed"]="Зависимости успешно установлены"
+    ["detecting_os"]="Определение операционной системы..."
+    ["installing_deps"]="Установка зависимостей для"
+    ["unsupported_linux"]="Неподдерживаемый дистрибутив Linux:"
+    ["install_manually"]="Пожалуйста, установите dialog и jq вручную"
+    ["cant_detect_linux"]="Не удалось определить дистрибутив Linux"
+    ["homebrew_not_found"]="Homebrew не установлен. Установите его с https://brew.sh"
+    ["unsupported_os"]="Неподдерживаемая операционная система:"
+    ["token_saved"]="Токен успешно сохранен в"
+    ["token_not_entered"]="Токен не был введен. Вы можете добавить его позже с помощью команды:"
+    ["cli_installed"]="CLI успешно установлен!"
+    ["select_language"]="Выберите язык / Select language:"
+    ["russian"]="Русский"
+    ["english"]="English"
+    ["command_format"]="gosms [команда] [опции]"
+    ["example_command"]="gosms sendsms -num <номер> --text <текст> [--device <id>] [--sim <номер>]"
+    ["example_simple"]="gosms sendsms -num +79001234567 --text \"Привет!\""
+    ["example_full"]="gosms sendsms -num +79001234567 --text \"Привет!\" --device 6654a4e8f1527149588c89f2 --sim 1"
+    ["example_edit"]="gosms --edit"
+    ["uninstall"]="Удалить CLI"
+    ["uninstall_confirm"]="Вы уверены, что хотите удалить GoSMS CLI? (y/n): "
+    ["uninstalling"]="Удаление GoSMS CLI..."
+    ["removing_files"]="Удаление файлов..."
+    ["removing_config"]="Удаление конфигурации..."
+    ["uninstall_complete"]="GoSMS CLI успешно удален!"
+    ["uninstall_cancelled"]="Удаление отменено."
+    ["installing"]="Установка GoSMS CLI..."
+    ["enter_api_key"]="Введите ваш API ключ: "
+    ["invalid_api_key"]="Неверный формат API ключа. Следуйте инструкции выше."
+    ["invalid_api_key_empty"]="API ключ не может быть пустым."
+    ["invalid_api_key_format"]="Неверный формат API ключа. Ожидается формат: xxxxx.yyyyy.zzzzz"
+    ["invalid_api_key_parts"]="API ключ должен состоять из трех частей, разделенных точками."
+    ["invalid_api_key_base64"]="Неверный формат кодирования в API ключе. Ожидается base64url кодирование."
+    ["api_key_saved"]="API ключ успешно сохранен!"
+    ["press_enter"]="Нажмите Enter для продолжения..."
+    ["logo"]="$(generate_logo)"
+    ["api_key_instructions"]=$'Как получить API ключ для GoSMS.ru:\n\n1. Перейдите на сайт: https://cms.gosms.ru\n2. Войдите в панель управления\n3. Откройте раздел "API интеграции"\n4. Нажмите кнопку "Создать API"\n5. В разделе "Доступ" выберите "SMS (Может отправлять сообщения)"\n6. Скопируйте сгенерированный ключ и вставьте его ниже\n'
+)
+
+# English language
+declare -A EN=(
+    ["app_name"]="Gosms CLI - SMS sending utility via Gosms.ru service"
+    ["usage"]="Usage:"
+    ["commands"]="Commands:"
+    ["send_sms"]="Send SMS message"
+    ["edit_settings"]="Edit settings (token)"
+    ["show_help"]="Show this help message"
+    ["options"]="Options for sendsms:"
+    ["phone"]="Recipient phone number (required)"
+    ["text"]="Message text (required)"
+    ["device"]="Device ID (optional)"
+    ["sim"]="SIM card number (optional, requires --device)"
+    ["examples"]="Examples:"
+    ["config"]="Configuration:"
+    ["token_stored"]="API token is stored in"
+    ["token_edit"]="To change the token, use the command"
+    ["unknown_param"]="Unknown parameter:"
+    ["required_params"]="Error: phone number and message text are required"
+    ["token_not_found"]="Token not found. Use gosms --edit to configure"
+    ["sim_without_device"]="Error: SIM can only be specified with DEVICE"
+    ["settings_updated"]="Settings successfully updated"
+    ["settings_not_changed"]="Settings were not changed"
+    ["deps_installed"]="Dependencies successfully installed"
+    ["detecting_os"]="Detecting operating system..."
+    ["installing_deps"]="Installing dependencies for"
+    ["unsupported_linux"]="Unsupported Linux distribution:"
+    ["install_manually"]="Please install dialog and jq manually"
+    ["cant_detect_linux"]="Could not detect Linux distribution"
+    ["homebrew_not_found"]="Homebrew is not installed. Install it from https://brew.sh"
+    ["unsupported_os"]="Unsupported operating system:"
+    ["token_saved"]="Token successfully saved to"
+    ["token_not_entered"]="Token was not entered. You can add it later using the command:"
+    ["cli_installed"]="CLI successfully installed!"
+    ["select_language"]="Выберите язык / Select language:"
+    ["russian"]="Русский"
+    ["english"]="English"
+    ["command_format"]="gosms [command] [options]"
+    ["example_command"]="gosms sendsms -num <number> --text <text> [--device <id>] [--sim <number>]"
+    ["example_simple"]="gosms sendsms -num +79001234567 --text \"Hello!\""
+    ["example_full"]="gosms sendsms -num +79001234567 --text \"Hello!\" --device 6654a4e8f1527149588c89f2 --sim 1"
+    ["example_edit"]="gosms --edit"
+    ["uninstall"]="Uninstall CLI"
+    ["uninstall_confirm"]="Are you sure you want to uninstall GoSMS CLI? (y/n): "
+    ["uninstalling"]="Uninstalling GoSMS CLI..."
+    ["removing_files"]="Removing files..."
+    ["removing_config"]="Removing configuration..."
+    ["uninstall_complete"]="GoSMS CLI successfully uninstalled!"
+    ["uninstall_cancelled"]="Uninstallation cancelled."
+    ["installing"]="Installing GoSMS CLI..."
+    ["enter_api_key"]="Enter your API key: "
+    ["invalid_api_key"]="Invalid API key format. Please follow the instructions above."
+    ["invalid_api_key_empty"]="API key cannot be empty."
+    ["invalid_api_key_format"]="Invalid API key format. Expected format: xxxxx.yyyyy.zzzzz"
+    ["invalid_api_key_parts"]="API key must consist of three parts separated by dots."
+    ["invalid_api_key_base64"]="Invalid encoding in API key. Expected base64url encoding."
+    ["api_key_saved"]="API key successfully saved!"
+    ["press_enter"]="Press Enter to continue..."
+    ["logo"]="$(generate_logo)"
+    ["api_key_instructions"]=$'How to get an API key for GoSMS.ru:\n\n1. Go to: https://cms.gosms.ru\n2. Log in to the control panel\n3. Open the "API Integration" section\n4. Click the "Create API" button\n5. In the "Access" section, select "SMS (Can send messages)"\n6. Copy the generated key and paste it below\n'
+)
+
+# Функция для получения перевода
+function get_text() {
+    local lang=$1
+    local key=$2
+    local text
+    
+    case $lang in
+        "ru") text="${RU[$key]}" ;;
+        "en") text="${EN[$key]}" ;;
+        *) text="${EN[$key]}" ;; # По умолчанию английский
+    esac
+    
+    echo "$text"
+} 
