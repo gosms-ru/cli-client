@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Включаем режим отладки
-set -x
-
 # Цвета для вывода
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -19,8 +16,7 @@ download_file() {
     local file=$1
     local target=$2
     echo -e "${BLUE}Загрузка $file...${NC}"
-    wget -q "$REPO_URL/$file" -O "$target"
-    if [ $? -eq 0 ]; then
+    if curl -sSL "$REPO_URL/$file" -o "$target"; then
         echo -e "${GREEN}✅ $file успешно загружен${NC}"
         return 0
     else
@@ -29,22 +25,17 @@ download_file() {
     fi
 }
 
-# Проверка наличия wget
-if ! command -v wget &> /dev/null; then
-    echo -e "${RED}❌ wget не установлен. Устанавливаем...${NC}"
-    apt-get update && apt-get install -y wget
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}❌ Не удалось установить wget${NC}"
-        exit 1
-    fi
+# Проверка наличия curl
+if ! command -v curl &> /dev/null; then
+    echo -e "${RED}❌ curl не установлен. Пожалуйста, установите curl и попробуйте снова.${NC}"
+    exit 1
 fi
 
 echo -e "${BLUE}Начинаем установку GoSMS CLI...${NC}"
 
-# Создаем директорию для установки
-INSTALL_DIR="/opt/gosms"
-mkdir -p "$INSTALL_DIR"
-cd "$INSTALL_DIR"
+# Создаем временную директорию
+TEMP_DIR=$(mktemp -d)
+cd "$TEMP_DIR"
 
 # Загружаем необходимые файлы
 download_file "gosms.sh" "gosms.sh"
@@ -53,6 +44,7 @@ download_file "translations.sh" "translations.sh"
 # Проверяем успешность загрузки
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Ошибка при загрузке файлов${NC}"
+    rm -rf "$TEMP_DIR"
     exit 1
 fi
 
@@ -60,16 +52,25 @@ fi
 chmod +x gosms.sh
 chmod +x translations.sh
 
-# Создаем символические ссылки
-echo -e "${BLUE}Создаем символические ссылки...${NC}"
-ln -sf "$INSTALL_DIR/gosms.sh" /usr/local/bin/gosms
-ln -sf "$INSTALL_DIR/translations.sh" /usr/local/bin/gosms_translations.sh
+# Перемещаем файлы в /usr/local/bin
+echo -e "${BLUE}Установка файлов в систему...${NC}"
+
+# Проверяем существование директории
+if [ ! -d "/usr/local/bin" ]; then
+    echo -e "${YELLOW}Создаем директорию /usr/local/bin...${NC}"
+    mkdir -p /usr/local/bin
+fi
+
+# Копируем файлы
+cp gosms.sh /usr/local/bin/gosms
+cp translations.sh /usr/local/bin/gosms_translations.sh
 
 # Устанавливаем права
 chmod 755 /usr/local/bin/gosms
 chmod 755 /usr/local/bin/gosms_translations.sh
 
-echo -e "${GREEN}✅ Файлы установлены в $INSTALL_DIR${NC}"
+# Очищаем временную директорию
+rm -rf "$TEMP_DIR"
 
 # Подключаем файл с переводами
 source /usr/local/bin/gosms_translations.sh
@@ -103,8 +104,10 @@ check_api_key() {
 
 # Функция для выбора языка
 select_language() {
+    local lang_choice
+    
     clear
-    echo -e "${CYAN}$(get_text "en" "logo")${NC}"
+    echo -e "${CYAN}GoSMS CLI${NC}"
     echo ""
     echo -e "${BLUE}Выберите язык / Select language:${NC}"
     echo "1) Русский"
@@ -112,9 +115,9 @@ select_language() {
     
     while true; do
         read -p "Выберите номер / Select number (1-2): " lang_choice
-        case $lang_choice in
-            1) echo "ru"; break ;;
-            2) echo "en"; break ;;
+        case "$lang_choice" in
+            1) echo "ru"; return 0 ;;
+            2) echo "en"; return 0 ;;
             *) echo -e "${RED}❌ Неверный выбор. Пожалуйста, выберите 1 или 2${NC}" ;;
         esac
     done
@@ -126,7 +129,7 @@ request_api_key() {
     local config_file=$2
     
     clear
-    echo -e "${CYAN}$(get_text "$lang" "logo")${NC}"
+    echo -e "${CYAN}GoSMS CLI${NC}"
     echo ""
     echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
     echo ""
@@ -168,7 +171,4 @@ echo -e "${YELLOW}$(get_text "$LANG" "example_command")${NC}"
 echo -e "${YELLOW}$(get_text "$LANG" "example_edit")${NC}"
 
 # Ждем нажатия Enter перед выходом
-read -p "$(get_text "$LANG" "press_enter")"
-
-# Отключаем режим отладки
-set +x 
+read -p "$(get_text "$LANG" "press_enter")" 
