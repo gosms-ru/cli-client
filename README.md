@@ -7,7 +7,8 @@
 <a name="english"></a>
 # GoSMS CLI
 
-CLI client for sending SMS through GoSMS.ru service
+🚀 SMS CLI Client by GoSMS.ru
+📌 Features: 📩Send SMS via command line ⚡Quick integration with GoSMS.ru 🔑API key authentication
 
 ## Table of Contents
 - [Installation](#installation)
@@ -119,7 +120,8 @@ MIT License
 <a name="russian"></a>
 # GoSMS CLI
 
-CLI-клиент для отправки SMS через сервис GoSMS.ru
+🚀 CLI-клиент для отправки SMS от GoSMS.ru 
+📌 Возможности: 📩 Отправка SMS через командную строку ⚡ Быстрая интеграция с сервисом GoSMS.ru 🔑 Работа с API ключом
 
 ## Содержание
 - [Установка](#установка)
