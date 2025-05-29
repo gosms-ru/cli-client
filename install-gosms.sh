@@ -60,9 +60,12 @@ sudo mv translations.sh /usr/local/bin/gosms_translations.sh
 # Очищаем временную директорию
 rm -rf "$TEMP_DIR"
 
+# Подключаем файл с переводами
+source /usr/local/bin/gosms_translations.sh
+
 # Выбор языка
 clear
-echo -e "${CYAN}GoSMS CLI${NC}"
+echo -e "${CYAN}$(get_text "en" "logo")${NC}"
 echo ""
 echo -e "${BLUE}Выберите язык / Select language:${NC}"
 echo "1) Русский"
@@ -78,9 +81,6 @@ esac
 # Сохраняем выбранный язык в конфигурацию
 CONFIG_FILE="$HOME/.gosms.conf"
 echo "language=$LANG" > "$CONFIG_FILE"
-
-# Подключаем файл с переводами
-source /usr/local/bin/gosms_translations.sh
 
 # Функция для проверки формата JWT токена
 check_api_key() {
@@ -117,7 +117,10 @@ echo -e "${YELLOW}$(get_text "$LANG" "api_key_instructions")${NC}"
 echo ""
 
 # Запрос API ключа
-while true; do
+max_attempts=3
+attempt=0
+
+while [ $attempt -lt $max_attempts ]; do
     read -p "$(get_text "$LANG" "enter_api_key")" api_key
     
     if check_api_key "$api_key"; then
@@ -125,6 +128,12 @@ while true; do
         chmod 600 "$CONFIG_FILE"
         echo -e "${GREEN}✅ $(get_text "$LANG" "api_key_saved")${NC}"
         break
+    fi
+    
+    attempt=$((attempt + 1))
+    if [ $attempt -eq $max_attempts ]; then
+        echo -e "${YELLOW}$(get_text "$LANG" "token_not_entered")${NC}"
+        echo -e "${YELLOW}gosms --edit${NC}"
     fi
 done
 
