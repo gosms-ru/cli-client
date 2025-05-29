@@ -127,11 +127,40 @@ choose_language() {
         echo -e "${BLUE}Выберите язык / Select language:${NC}"
         echo "1) Русский"
         echo "2) English"
+        echo ""
         read -p "Выберите номер / Select number (1-2): " lang_choice
+        
+        # Проверяем, что ввод не пустой
+        if [ -z "$lang_choice" ]; then
+            echo -e "${RED}❌ Пожалуйста, введите номер (1 или 2)${NC}"
+            sleep 1
+            continue
+        fi
+        
+        # Проверяем, что ввод - это число
+        if ! [[ "$lang_choice" =~ ^[0-9]+$ ]]; then
+            echo -e "${RED}❌ Пожалуйста, введите число (1 или 2)${NC}"
+            sleep 1
+            continue
+        fi
+        
         case "$lang_choice" in
-            1) LANG="ru"; break ;;
-            2) LANG="en"; break ;;
-            *) echo -e "${RED}❌ Неверный выбор. Пожалуйста, выберите 1 или 2${NC}" ;;
+            1) 
+                LANG="ru"
+                echo -e "${GREEN}✅ Выбран русский язык${NC}"
+                sleep 1
+                break 
+                ;;
+            2) 
+                LANG="en"
+                echo -e "${GREEN}✅ English language selected${NC}"
+                sleep 1
+                break 
+                ;;
+            *) 
+                echo -e "${RED}❌ Неверный выбор. Пожалуйста, выберите 1 или 2${NC}"
+                sleep 1
+                ;;
         esac
     done
 }
