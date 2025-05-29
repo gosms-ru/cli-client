@@ -102,22 +102,18 @@ check_api_key() {
     return 0
 }
 
-# Функция для выбора языка
-select_language() {
-    local lang_choice
-    
-    clear
-    echo -e "${CYAN}GoSMS CLI${NC}"
-    echo ""
-    echo -e "${BLUE}Выберите язык / Select language:${NC}"
-    echo "1) Русский"
-    echo "2) English"
-    
+# Исправленная функция выбора языка
+choose_language() {
     while true; do
+        echo -e "${CYAN}GoSMS CLI${NC}"
+        echo ""
+        echo -e "${BLUE}Выберите язык / Select language:${NC}"
+        echo "1) Русский"
+        echo "2) English"
         read -p "Выберите номер / Select number (1-2): " lang_choice
         case "$lang_choice" in
-            1) echo "ru"; return 0 ;;
-            2) echo "en"; return 0 ;;
+            1) LANG="ru"; break ;;
+            2) LANG="en"; break ;;
             *) echo -e "${RED}❌ Неверный выбор. Пожалуйста, выберите 1 или 2${NC}" ;;
         esac
     done
@@ -128,7 +124,6 @@ request_api_key() {
     local lang=$1
     local config_file=$2
     
-    clear
     echo -e "${CYAN}GoSMS CLI${NC}"
     echo ""
     echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
@@ -159,11 +154,9 @@ request_api_key() {
 # Основной процесс установки
 CONFIG_FILE="$HOME/.gosms.conf"
 
-# Выбор языка
-LANG=$(select_language)
+choose_language
 echo "language=$LANG" > "$CONFIG_FILE"
 
-# Запрос API ключа
 request_api_key "$LANG" "$CONFIG_FILE"
 
 echo -e "${GREEN}✅ $(get_text "$LANG" "cli_installed")${NC}"
