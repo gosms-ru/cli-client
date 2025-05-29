@@ -1,41 +1,6 @@
 #!/bin/bash
 
-# Функция для генерации логотипа
-generate_logo() {
-    local logo="
-${CYAN}
-╔═══════════════════════════════════════════════════╗
-║                                                   ║
-║  ██████═╗  ██████╗ ███████╗███╗   ███╗███████╗    ║
-║  ██╔════╝ ██╔═══██╗██╔════╝████╗ ████║██╔════╝    ║
-║  ██║  ███╗██║   ██║███████╗██╔████╔██║███████╗    ║
-║  ██║   ██║██║   ██║╚════██║██║╚██╔╝██║╚════██║    ║
-║  ╚██████╔╝╚██████╔╝███████║██║ ╚═╝ ██║███████║    ║
-║   ╚═════╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝╚══════╝    ║
-║                                                   ║
-╚═══════════════════════════════════════════════════╝${NC}
-"
-    echo "$logo"
-}
 
-# Функция для анимированного логотипа
-animate_logo() {
-    local duration=0.1  # Задержка между сменой цветов в секундах
-    
-    # Очищаем экран
-    clear
-    
-    # Выводим логотип с разными цветами
-    for i in {1..5}; do
-        clear
-        generate_logo
-        sleep $duration
-    done
-    
-    # Финальный вывод в голубом цвете
-    clear
-    echo -e "${CYAN}$(generate_logo)${NC}"
-}
 
 # Русский язык
 declare -A RU=(
@@ -95,7 +60,6 @@ declare -A RU=(
     ["invalid_api_key_base64"]="Неверный формат кодирования в API ключе. Ожидается base64url кодирование."
     ["api_key_saved"]="API ключ успешно сохранен!"
     ["press_enter"]="Нажмите Enter для продолжения..."
-    ["logo"]="$(generate_logo)"
     ["api_key_instructions"]=$'Как получить API ключ для GoSMS.ru:\n\n1. Перейдите на сайт: https://cms.gosms.ru\n2. Войдите в панель управления\n3. Откройте раздел "API интеграции"\n4. Нажмите кнопку "Создать API"\n5. В разделе "Доступ" выберите "SMS (Может отправлять сообщения)"\n6. Скопируйте сгенерированный ключ и вставьте его ниже\n'
 )
 
@@ -157,7 +121,6 @@ declare -A EN=(
     ["invalid_api_key_base64"]="Invalid encoding in API key. Expected base64url encoding."
     ["api_key_saved"]="API key successfully saved!"
     ["press_enter"]="Press Enter to continue..."
-    ["logo"]="$(generate_logo)"
     ["api_key_instructions"]=$'How to get an API key for GoSMS.ru:\n\n1. Go to: https://cms.gosms.ru\n2. Log in to the control panel\n3. Open the "API Integration" section\n4. Click the "Create API" button\n5. In the "Access" section, select "SMS (Can send messages)"\n6. Copy the generated key and paste it below\n'
 )
 

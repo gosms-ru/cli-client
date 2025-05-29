@@ -20,8 +20,8 @@ else
     LANG="en" # По умолчанию английский
 fi
 
-# Вывод логотипа
-echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
+# Показываем информацию о приложении
+echo -e "${CYAN}$(get_text "$LANG" "app_name")${NC}"
 
 # Запрос подтверждения
 read -p "$(get_text "$LANG" "uninstall_confirm")" confirm

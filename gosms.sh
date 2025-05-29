@@ -45,7 +45,6 @@ check_api_key() {
 
 function setup_language() {
     clear
-    echo -e "${CYAN}$(get_text "en" "logo")${NC}"
     echo ""
     echo -e "${BLUE}$(get_text "en" "select_language")${NC}"
     echo "1) $(get_text "en" "russian")"
@@ -64,7 +63,7 @@ function setup_language() {
 
 function setup_api_key() {
     clear
-    echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
+    
     echo ""
     echo -e "${YELLOW}$(get_text "$LANG" "api_key_instructions")${NC}"
     echo ""
@@ -83,7 +82,8 @@ function setup_api_key() {
 }
 
 function usage() {
-    echo -e "${BLUE}$(get_text "$LANG" "app_name")${NC}"
+    echo -e "${CYAN}$(get_text "en" "app_name")${NC}"
+    echo -e "${CYAN}$(get_text "en" "usage")${NC}"
     echo ""
     echo "$(get_text "$LANG" "usage")"
     echo "  $(get_text "$LANG" "command_format")"
@@ -141,8 +141,7 @@ function edit_settings() {
 }
 
 function uninstall() {
-    # Вывод логотипа
-    echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
+    
 
     # Запрос подтверждения
     read -p "$(get_text "$LANG" "uninstall_confirm")" confirm
@@ -251,5 +250,7 @@ elif [[ "$1" == "sendsms" ]]; then
         echo "$RESPONSE_BODY" | jq '.' 2>/dev/null || echo "$RESPONSE_BODY"
     fi
 else
+    echo -e "${CYAN}$(get_text "$LANG" "app_name")${NC}"
+    echo -e "${CYAN}$(get_text "$LANG" "usage")${NC}"
     usage
 fi 
