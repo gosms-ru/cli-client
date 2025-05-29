@@ -63,25 +63,6 @@ rm -rf "$TEMP_DIR"
 # Подключаем файл с переводами
 source /usr/local/bin/gosms_translations.sh
 
-# Выбор языка
-clear
-echo -e "${CYAN}$(get_text "en" "logo")${NC}"
-echo ""
-echo -e "${BLUE}Выберите язык / Select language:${NC}"
-echo "1) Русский"
-echo "2) English"
-read -p "Выберите номер / Select number (1-2): " lang_choice
-
-case $lang_choice in
-    1) LANG="ru" ;;
-    2) LANG="en" ;;
-    *) LANG="en" ;; # По умолчанию английский
-esac
-
-# Сохраняем выбранный язык в конфигурацию
-CONFIG_FILE="$HOME/.gosms.conf"
-echo "language=$LANG" > "$CONFIG_FILE"
-
 # Функция для проверки формата JWT токена
 check_api_key() {
     local key=$1
@@ -109,33 +90,67 @@ check_api_key() {
     return 0
 }
 
-# Вывод инструкций по получению API ключа
-clear
-echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
-echo ""
-echo -e "${YELLOW}$(get_text "$LANG" "api_key_instructions")${NC}"
-echo ""
+# Функция для выбора языка
+select_language() {
+    clear
+    echo -e "${CYAN}$(get_text "en" "logo")${NC}"
+    echo ""
+    echo -e "${BLUE}Выберите язык / Select language:${NC}"
+    echo "1) Русский"
+    echo "2) English"
+    
+    while true; do
+        read -p "Выберите номер / Select number (1-2): " lang_choice
+        case $lang_choice in
+            1) echo "ru"; break ;;
+            2) echo "en"; break ;;
+            *) echo -e "${RED}❌ Неверный выбор. Пожалуйста, выберите 1 или 2${NC}" ;;
+        esac
+    done
+}
+
+# Функция для запроса API ключа
+request_api_key() {
+    local lang=$1
+    local config_file=$2
+    
+    clear
+    echo -e "${CYAN}$(get_text "$lang" "logo")${NC}"
+    echo ""
+    echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
+    echo ""
+
+    max_attempts=3
+    attempt=0
+
+    while [ $attempt -lt $max_attempts ]; do
+        read -p "$(get_text "$lang" "enter_api_key")" api_key
+        
+        if check_api_key "$api_key"; then
+            echo "token=$api_key" >> "$config_file"
+            chmod 600 "$config_file"
+            echo -e "${GREEN}✅ $(get_text "$lang" "api_key_saved")${NC}"
+            return 0
+        fi
+        
+        attempt=$((attempt + 1))
+        if [ $attempt -eq $max_attempts ]; then
+            echo -e "${YELLOW}$(get_text "$lang" "token_not_entered")${NC}"
+            echo -e "${YELLOW}gosms --edit${NC}"
+            return 1
+        fi
+    done
+}
+
+# Основной процесс установки
+CONFIG_FILE="$HOME/.gosms.conf"
+
+# Выбор языка
+LANG=$(select_language)
+echo "language=$LANG" > "$CONFIG_FILE"
 
 # Запрос API ключа
-max_attempts=3
-attempt=0
-
-while [ $attempt -lt $max_attempts ]; do
-    read -p "$(get_text "$LANG" "enter_api_key")" api_key
-    
-    if check_api_key "$api_key"; then
-        echo "token=$api_key" >> "$CONFIG_FILE"
-        chmod 600 "$CONFIG_FILE"
-        echo -e "${GREEN}✅ $(get_text "$LANG" "api_key_saved")${NC}"
-        break
-    fi
-    
-    attempt=$((attempt + 1))
-    if [ $attempt -eq $max_attempts ]; then
-        echo -e "${YELLOW}$(get_text "$LANG" "token_not_entered")${NC}"
-        echo -e "${YELLOW}gosms --edit${NC}"
-    fi
-done
+request_api_key "$LANG" "$CONFIG_FILE"
 
 echo -e "${GREEN}✅ $(get_text "$LANG" "cli_installed")${NC}"
 echo -e "${YELLOW}$(get_text "$LANG" "example_command")${NC}"
