@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Проверка на прямой запуск скрипта
+if [ -t 0 ]; then
+    # Скрипт запущен напрямую
+    :
+else
+    # Скрипт запущен через pipe
+    echo "Для корректной работы установщика, пожалуйста, выполните следующие команды:"
+    echo "curl -sSL https://raw.githubusercontent.com/gosms-ru/cli-client/main/install-gosms.sh -o install-gosms.sh"
+    echo "chmod +x install-gosms.sh"
+    echo "./install-gosms.sh"
+    exit 1
+fi
+
 # Цвета для вывода
 RED='\033[0;31m'
 GREEN='\033[0;32m'
