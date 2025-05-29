@@ -21,17 +21,6 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Вывод логотипа
-echo -e "${CYAN}"
-echo "  _____       _____ __  __ _____ "
-echo " / ____|     / ____|  \/  |_   _|"
-echo "| |  __  ___| (___ | \  / | | |  "
-echo "| | |_ |/ _ \\___ \| |\/| | | |  "
-echo "| |__| | (_) |___) | |  | |_| |_ "
-echo " \_____|\___/|____/|_|  |_|_____|"
-echo -e "${NC}"
-echo ""
-
 # Базовый URL репозитория
 REPO_URL="https://raw.githubusercontent.com/gosms-ru/cli-client/main"
 
