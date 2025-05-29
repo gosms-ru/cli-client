@@ -157,18 +157,12 @@ choose_language() {
                 LANG="ru"
                 echo -e "${GREEN}✅ Выбран русский язык${NC}"
                 sleep 1
-                # Только здесь выводим логотип
-                echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
-                echo ""
                 break
                 ;;
             2)
                 LANG="en"
                 echo -e "${GREEN}✅ English language selected${NC}"
                 sleep 1
-                # Только здесь выводим логотип
-                echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
-                echo ""
                 break
                 ;;
             *)
@@ -215,6 +209,10 @@ request_api_key() {
 CONFIG_FILE="$HOME/.gosms.conf"
 
 choose_language
+
+echo -e "${CYAN}$(get_text "$LANG" "logo")${NC}"
+echo ""
+
 echo "language=$LANG" > "$CONFIG_FILE"
 
 request_api_key "$LANG" "$CONFIG_FILE"
