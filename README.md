@@ -1,6 +1,136 @@
 # GoSMS CLI
 
+[English](#english) | [Русский](#russian)
+
+---
+
+<a name="english"></a>
+# GoSMS CLI
+
+CLI client for sending SMS through GoSMS.ru service
+
+## Table of Contents
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Additional Commands](#additional-commands)
+- [Examples](#examples)
+- [Configuration File](#configuration-file)
+- [Uninstallation](#uninstallation)
+- [Support](#support)
+- [License](#license)
+
+## Installation
+
+### Automatic Installation
+
+To install, run one of the following commands:
+
+```bash
+# Method 1 (recommended):
+curl -sSL https://raw.githubusercontent.com/gosms-ru/cli-client/main/install-gosms.sh -o install-gosms.sh && chmod +x install-gosms.sh && ./install-gosms.sh
+
+# Method 2 (alternative):
+bash -c "$(curl -sSL https://raw.githubusercontent.com/gosms-ru/cli-client/main/install-gosms.sh)"
+```
+
+The script will automatically:
+1. Download all necessary files
+2. Install them in the system
+3. Configure access permissions
+
+### Requirements
+
+- curl
+- sudo (for installation in system directories)
+
+## Configuration
+
+Before using, you need to obtain an API key from [GoSMS.ru](https://gosms.ru) and configure it:
+
+```bash
+gosms --edit
+```
+
+Enter the received API key when prompted.
+
+## Usage
+
+### Basic Commands
+
+```bash
+gosms sendsms -num <number> --text <text> [--device <id>] [--sim <number>]
+```
+
+### Parameters
+
+- `-num <number>` - recipient's phone number (required)
+- `--text <text>` - message text (required)
+- `--device <id>` - device ID (optional)
+- `--sim <number>` - SIM card number (optional, requires device specification)
+
+## Additional Commands
+
+- `gosms --edit` - edit settings (API key)
+- `gosms --uninstall` - remove CLI client
+- `gosms -h` or `gosms --help` - show help
+
+## Examples
+
+1. Simple SMS sending:
+```bash
+gosms sendsms -num "+79001234567" --text "Hello, world!"
+```
+
+2. Sending SMS with device specification:
+```bash
+gosms sendsms -num "+79001234567" --text "Test message" --device "device123"
+```
+
+3. Sending SMS with device and SIM card specification:
+```bash
+gosms sendsms -num "+79001234567" --text "Test message" --device "device123" --sim 1
+```
+
+## Configuration File
+
+The configuration file is located at `~/.gosms.conf` and contains:
+- API key
+- Interface language
+
+## Uninstallation
+
+To remove the CLI client, run:
+
+```bash
+gosms --uninstall
+```
+
+## Support
+
+If you encounter any issues or have questions, please create an issue in the project repository.
+
+## License
+
+MIT License
+
+---
+
+<a name="russian"></a>
+# GoSMS CLI
+
 CLI-клиент для отправки SMS через сервис GoSMS.ru
+
+## Содержание
+- [Установка](#установка)
+- [Настройка](#настройка)
+- [Использование](#использование)
+- [Дополнительные команды](#дополнительные-команды)
+- [Примеры](#примеры)
+- [Конфигурация](#конфигурация)
+- [Удаление](#удаление)
+- [Поддержка](#поддержка)
+- [Лицензия](#лицензия)
 
 ## Установка
 
@@ -51,13 +181,13 @@ gosms sendsms -num <номер> --text <текст> [--device <id>] [--sim <но
 - `--device <id>` - ID устройства (опциональный)
 - `--sim <номер>` - номер SIM-карты (опциональный, требует указания device)
 
-### Дополнительные команды
+## Дополнительные команды
 
 - `gosms --edit` - редактировать настройки (API-ключ)
 - `gosms --uninstall` - удалить CLI-клиент
 - `gosms -h` или `gosms --help` - показать справку
 
-### Примеры использования
+## Примеры
 
 1. Простая отправка SMS:
 ```bash
