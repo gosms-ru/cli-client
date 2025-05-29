@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Включаем режим отладки
+set -x
+
 # Цвета для вывода
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -54,11 +57,48 @@ chmod +x translations.sh
 
 # Перемещаем файлы в /usr/local/bin
 echo -e "${BLUE}Установка файлов в систему...${NC}"
-sudo mv gosms.sh /usr/local/bin/gosms
-sudo mv translations.sh /usr/local/bin/gosms_translations.sh
+
+# Проверяем, запущен ли скрипт от root
+if [ "$EUID" -eq 0 ]; then
+    # Если запущен от root, используем прямые команды без sudo
+    INSTALL_CMD=""
+else
+    # Если не от root, используем sudo
+    INSTALL_CMD="sudo"
+fi
+
+# Проверяем существование директории
+if [ ! -d "/usr/local/bin" ]; then
+    echo -e "${YELLOW}Создаем директорию /usr/local/bin...${NC}"
+    $INSTALL_CMD mkdir -p /usr/local/bin
+fi
+
+echo -e "${YELLOW}Копируем файлы...${NC}"
+
+# Копируем файлы с проверкой
+if $INSTALL_CMD cp gosms.sh /usr/local/bin/gosms && $INSTALL_CMD cp translations.sh /usr/local/bin/gosms_translations.sh; then
+    echo -e "${GREEN}✅ Файлы успешно скопированы${NC}"
+else
+    echo -e "${RED}❌ Ошибка при копировании файлов${NC}"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+echo -e "${YELLOW}Устанавливаем права доступа...${NC}"
+
+# Устанавливаем правильные права
+if $INSTALL_CMD chmod 755 /usr/local/bin/gosms && $INSTALL_CMD chmod 755 /usr/local/bin/gosms_translations.sh; then
+    echo -e "${GREEN}✅ Права доступа установлены${NC}"
+else
+    echo -e "${RED}❌ Ошибка при установке прав доступа${NC}"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
 
 # Очищаем временную директорию
 rm -rf "$TEMP_DIR"
+
+echo -e "${GREEN}✅ Файлы установлены в систему${NC}"
 
 # Подключаем файл с переводами
 source /usr/local/bin/gosms_translations.sh
@@ -157,4 +197,7 @@ echo -e "${YELLOW}$(get_text "$LANG" "example_command")${NC}"
 echo -e "${YELLOW}$(get_text "$LANG" "example_edit")${NC}"
 
 # Ждем нажатия Enter перед выходом
-read -p "$(get_text "$LANG" "press_enter")" 
+read -p "$(get_text "$LANG" "press_enter")"
+
+# Отключаем режим отладки
+set +x 
