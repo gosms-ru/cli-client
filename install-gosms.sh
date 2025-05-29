@@ -23,8 +23,7 @@ NC='\033[0m' # No Color
 
 # Функция для генерации логотипа
 generate_logo() {
-    local logo="
-${CYAN}
+    echo -e "${CYAN}
 ╔═══════════════════════════════════════════════════╗
 ║                                                   ║
 ║  ██████═╗  ██████╗ ███████╗███╗   ███╗███████╗    ║
@@ -34,9 +33,7 @@ ${CYAN}
 ║  ╚██████╔╝╚██████╔╝███████║██║ ╚═╝ ██║███████║    ║
 ║   ╚═════╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝╚══════╝    ║
 ║                                                   ║
-╚═══════════════════════════════════════════════════╝${NC}
-"
-    echo "$logo"
+╚═══════════════════════════════════════════════════╝${NC}"
 }
 
 # Базовый URL репозитория
@@ -185,7 +182,7 @@ request_api_key() {
     local lang=$1
     local config_file=$2
     
-    echo -e "$(generate_logo)"
+    generate_logo
     echo ""
     echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
     echo ""
@@ -217,7 +214,7 @@ CONFIG_FILE="$HOME/.gosms.conf"
 
 choose_language
 
-echo -e "$(generate_logo)"
+generate_logo
 echo ""
 
 echo "language=$LANG" > "$CONFIG_FILE"
