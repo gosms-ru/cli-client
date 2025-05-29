@@ -89,9 +89,9 @@ check_api_key() {
     # Проверяем, что ключ не пустой
     if [[ -z "$key" ]]; then
         if [ "$LANG" = "ru" ]; then
-            echo -e "${RED}❌ Неверный формат API-ключа${NC}"
+            echo -e "${RED}❌ API ключ не может быть пустым${NC}"
         else
-            echo -e "${RED}❌ Invalid API key format${NC}"
+            echo -e "${RED}❌ API key cannot be empty${NC}"
         fi
         return 1
     fi
@@ -99,9 +99,9 @@ check_api_key() {
     # Проверяем формат JWT (три части, разделенные точками)
     if ! [[ "$key" =~ ^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$ ]]; then
         if [ "$LANG" = "ru" ]; then
-            echo -e "${RED}❌ Неверный формат API-ключа${NC}"
+            echo -e "${RED}❌ Неверный формат API ключа. Ожидается формат: xxxxx.yyyyy.zzzzz${NC}"
         else
-            echo -e "${RED}❌ Invalid API key format${NC}"
+            echo -e "${RED}❌ Invalid API key format. Expected format: xxxxx.yyyyy.zzzzz${NC}"
         fi
         return 1
     fi
@@ -130,4 +130,7 @@ done
 
 echo -e "${GREEN}✅ $(get_text "$LANG" "cli_installed")${NC}"
 echo -e "${YELLOW}$(get_text "$LANG" "example_command")${NC}"
-echo -e "${YELLOW}$(get_text "$LANG" "example_edit")${NC}" 
+echo -e "${YELLOW}$(get_text "$LANG" "example_edit")${NC}"
+
+# Ждем нажатия Enter перед выходом
+read -p "$(get_text "$LANG" "press_enter")" 
