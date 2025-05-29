@@ -9,7 +9,7 @@ CLI-клиент для отправки SMS через сервис GoSMS.ru
 Для установки выполните одну команду:
 
 ```bash
-curl -sSL https://github.com/gosms-ru/cli-client/tree/main/install-gosms.sh | bash
+curl -sSL https://raw.githubusercontent.com/gosms-ru/cli-client/main/install-gosms.sh | bash
 ```
 Скрипт автоматически:
 1. Загрузит все необходимые файлы
