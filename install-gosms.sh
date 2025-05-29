@@ -11,6 +11,18 @@ NC='\033[0m' # No Color
 # Базовый URL репозитория
 REPO_URL="https://raw.githubusercontent.com/gosms-ru/cli-client/main"
 
+# Функция для проверки прав суперпользователя
+check_sudo() {
+    if [ "$EUID" -ne 0 ]; then
+        echo -e "${YELLOW}Для установки в системные директории требуются права суперпользователя${NC}"
+        echo -e "${YELLOW}Пожалуйста, введите пароль для sudo:${NC}"
+        if ! sudo -v; then
+            echo -e "${RED}❌ Не удалось получить права суперпользователя${NC}"
+            exit 1
+        fi
+    fi
+}
+
 # Функция для загрузки файла
 download_file() {
     local file=$1
@@ -55,19 +67,24 @@ chmod +x translations.sh
 # Перемещаем файлы в /usr/local/bin
 echo -e "${BLUE}Установка файлов в систему...${NC}"
 
+# Проверяем права суперпользователя
+check_sudo
+
 # Проверяем существование директории
 if [ ! -d "/usr/local/bin" ]; then
     echo -e "${YELLOW}Создаем директорию /usr/local/bin...${NC}"
-    mkdir -p /usr/local/bin
+    sudo mkdir -p /usr/local/bin
 fi
 
 # Копируем файлы
-cp gosms.sh /usr/local/bin/gosms
-cp translations.sh /usr/local/bin/gosms_translations.sh
+echo -e "${BLUE}Копирование файлов...${NC}"
+sudo cp gosms.sh /usr/local/bin/gosms
+sudo cp translations.sh /usr/local/bin/gosms_translations.sh
 
 # Устанавливаем права
-chmod 755 /usr/local/bin/gosms
-chmod 755 /usr/local/bin/gosms_translations.sh
+echo -e "${BLUE}Установка прав доступа...${NC}"
+sudo chmod 755 /usr/local/bin/gosms
+sudo chmod 755 /usr/local/bin/gosms_translations.sh
 
 # Очищаем временную директорию
 rm -rf "$TEMP_DIR"
