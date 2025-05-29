@@ -21,9 +21,23 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Проверяем поддержку цветов
+if [ -t 1 ]; then
+    # Терминал поддерживает цвета
+    :
+else
+    # Терминал не поддерживает цвета
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    CYAN=''
+    NC=''
+fi
+
 # Функция для генерации логотипа
 generate_logo() {
-    echo -e "${CYAN}
+    printf "${CYAN}
 ╔═══════════════════════════════════════════════════╗
 ║                                                   ║
 ║  ██████═╗  ██████╗ ███████╗███╗   ███╗███████╗    ║
@@ -33,7 +47,7 @@ generate_logo() {
 ║  ╚██████╔╝╚██████╔╝███████║██║ ╚═╝ ██║███████║    ║
 ║   ╚═════╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝╚══════╝    ║
 ║                                                   ║
-╚═══════════════════════════════════════════════════╝${NC}"
+╚═══════════════════════════════════════════════════╝${NC}\n"
 }
 
 # Базовый URL репозитория
@@ -182,7 +196,9 @@ request_api_key() {
     local lang=$1
     local config_file=$2
     
+    echo "DEBUG: About to display logo in request_api_key"
     generate_logo
+    echo "DEBUG: Logo displayed in request_api_key"
     echo ""
     echo -e "${YELLOW}$(get_text "$lang" "api_key_instructions")${NC}"
     echo ""
@@ -214,7 +230,9 @@ CONFIG_FILE="$HOME/.gosms.conf"
 
 choose_language
 
+echo "DEBUG: About to display logo in main process"
 generate_logo
+echo "DEBUG: Logo displayed in main process"
 echo ""
 
 echo "language=$LANG" > "$CONFIG_FILE"
