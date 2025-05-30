@@ -1,7 +1,23 @@
 #!/bin/bash
 
+# Определение операционной системы
+OS="$(uname -s)"
+case "${OS}" in
+    Linux*)     PLATFORM="linux";;
+    Darwin*)    PLATFORM="macos";;
+    CYGWIN*)    PLATFORM="windows";;
+    MINGW*)     PLATFORM="windows";;
+    *)          PLATFORM="unknown";;
+esac
+
+# Определение пути к скрипту с учетом платформы
+if [ "$PLATFORM" = "windows" ]; then
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+else
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+fi
+
 # Подключаем файл с переводами
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source "$SCRIPT_DIR/gosms_translations.sh"
 
 # Цвета для вывода
@@ -12,11 +28,36 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Проверяем поддержку цветов
+if [ -t 1 ]; then
+    # Терминал поддерживает цвета
+    :
+else
+    # Терминал не поддерживает цвета
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    CYAN=''
+    NC=''
+fi
+
+# Определение конфигурационного файла с учетом платформы
+if [ "$PLATFORM" = "windows" ]; then
+    CONFIG_FILE="$USERPROFILE/.gosms.conf"
+else
+    CONFIG_FILE="$HOME/.gosms.conf"
+fi
+
 # Загружаем язык из конфигурации
-CONFIG_FILE="$HOME/.gosms.conf"
 if [[ -f "$CONFIG_FILE" ]]; then
-    LANG=$(grep '^language=' "$CONFIG_FILE" | cut -d '=' -f2- | tr -d '\r')
-    TOKEN_FROM_FILE=$(grep '^token=' "$CONFIG_FILE" | cut -d '=' -f2- | tr -d '\r')
+    if [ "$PLATFORM" = "windows" ]; then
+        LANG=$(grep '^language=' "$CONFIG_FILE" | cut -d '=' -f2- | tr -d '\r')
+        TOKEN_FROM_FILE=$(grep '^token=' "$CONFIG_FILE" | cut -d '=' -f2- | tr -d '\r')
+    else
+        LANG=$(grep '^language=' "$CONFIG_FILE" | cut -d '=' -f2-)
+        TOKEN_FROM_FILE=$(grep '^token=' "$CONFIG_FILE" | cut -d '=' -f2-)
+    fi
 fi
 
 # Если язык не установлен, используем английский по умолчанию
@@ -121,7 +162,11 @@ function edit_settings() {
     # Получаем текущий токен
     CURRENT_TOKEN=""
     if [[ -f "$CONFIG_FILE" ]]; then
-        CURRENT_TOKEN=$(grep '^token=' "$CONFIG_FILE" | cut -d '=' -f2- | tr -d '\r')
+        if [ "$PLATFORM" = "windows" ]; then
+            CURRENT_TOKEN=$(grep '^token=' "$CONFIG_FILE" | cut -d '=' -f2- | tr -d '\r')
+        else
+            CURRENT_TOKEN=$(grep '^token=' "$CONFIG_FILE" | cut -d '=' -f2-)
+        fi
     fi
 
     echo -e "${YELLOW}$(get_text "$LANG" "api_key_instructions")${NC}"
@@ -130,7 +175,12 @@ function edit_settings() {
     if [[ -n "$NEW_TOKEN" ]]; then
         # Сохраняем токен, сохраняя язык
         if [[ -f "$CONFIG_FILE" ]]; then
-            sed -i '/^token=/d' "$CONFIG_FILE"
+            if [ "$PLATFORM" = "windows" ]; then
+                sed -i 's/^token=.*/token='"$NEW_TOKEN"'/' "$CONFIG_FILE"
+            else
+                sed -i.bak 's/^token=.*/token='"$NEW_TOKEN"'/' "$CONFIG_FILE"
+                rm -f "${CONFIG_FILE}.bak"
+            fi
         fi
         echo "token=$NEW_TOKEN" >> "$CONFIG_FILE"
         chmod 600 "$CONFIG_FILE"
@@ -141,8 +191,6 @@ function edit_settings() {
 }
 
 function uninstall() {
-    
-
     # Запрос подтверждения
     read -p "$(get_text "$LANG" "uninstall_confirm")" confirm
 
@@ -155,8 +203,13 @@ function uninstall() {
 
     # Удаление файлов
     echo -e "${BLUE}$(get_text "$LANG" "removing_files")${NC}"
-    sudo rm -f /usr/local/bin/gosms
-    sudo rm -f /usr/local/bin/gosms_translations.sh
+    if [ "$PLATFORM" = "windows" ]; then
+        rm -f "$INSTALL_DIR/gosms"
+        rm -f "$INSTALL_DIR/gosms_translations.sh"
+    else
+        sudo rm -f "$INSTALL_DIR/gosms"
+        sudo rm -f "$INSTALL_DIR/gosms_translations.sh"
+    fi
 
     # Удаление конфигурации
     echo -e "${BLUE}$(get_text "$LANG" "removing_config")${NC}"

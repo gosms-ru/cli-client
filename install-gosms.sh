@@ -1,5 +1,41 @@
 #!/bin/bash
 
+# Определение операционной системы
+OS="$(uname -s)"
+case "${OS}" in
+    Linux*)     PLATFORM="linux";;
+    Darwin*)    PLATFORM="macos";;
+    CYGWIN*)    PLATFORM="windows";;
+    MINGW*)     PLATFORM="windows";;
+    *)          PLATFORM="unknown";;
+esac
+
+# Определение архитектуры
+ARCH="$(uname -m)"
+case "${ARCH}" in
+    x86_64)     ARCH="amd64";;
+    aarch64)    ARCH="arm64";;
+    armv7l)     ARCH="arm";;
+    *)          ARCH="unknown";;
+esac
+
+# Определение пути установки в зависимости от платформы
+case "${PLATFORM}" in
+    linux)
+        INSTALL_DIR="/usr/local/bin"
+        ;;
+    macos)
+        INSTALL_DIR="/usr/local/bin"
+        ;;
+    windows)
+        INSTALL_DIR="/usr/local/bin"
+        ;;
+    *)
+        echo "Неподдерживаемая операционная система"
+        exit 1
+        ;;
+esac
+
 # Проверка на прямой запуск скрипта
 if [ -t 0 ]; then
     # Скрипт запущен напрямую
@@ -51,7 +87,7 @@ generate_logo() {
 }
 
 # Базовый URL репозитория
-REPO_URL="https://raw.githubusercontent.com/gosms-ru/cli-client/main"
+REPO_URL="https://raw.githubusercontent.com/gosms-ru/cli-client/developer"
 
 # Функция для проверки прав суперпользователя
 check_sudo() {
@@ -61,6 +97,18 @@ check_sudo() {
         if ! sudo -v; then
             echo -e "${RED}❌ Не удалось получить права суперпользователя${NC}"
             exit 1
+        fi
+    fi
+}
+
+# Функция для создания директории с правами
+create_install_dir() {
+    if [ ! -d "$INSTALL_DIR" ]; then
+        echo -e "${YELLOW}Создаем директорию $INSTALL_DIR...${NC}"
+        if [ "$PLATFORM" = "windows" ]; then
+            mkdir -p "$INSTALL_DIR"
+        else
+            sudo mkdir -p "$INSTALL_DIR"
         fi
     fi
 }
@@ -87,8 +135,13 @@ fi
 
 echo -e "${BLUE}Начинаем установку GoSMS CLI...${NC}"
 
-# Создаем временную директорию
-TEMP_DIR=$(mktemp -d)
+# Создаем временную директорию с учетом платформы
+if [ "$PLATFORM" = "windows" ]; then
+    TEMP_DIR=$(mktemp -d)
+else
+    TEMP_DIR=$(mktemp -d)
+fi
+
 cd "$TEMP_DIR"
 
 # Загружаем необходимые файлы
@@ -106,27 +159,28 @@ fi
 chmod +x gosms.sh
 chmod +x translations.sh
 
-# Перемещаем файлы в /usr/local/bin
-echo -e "${BLUE}Установка файлов в систему...${NC}"
-
-# Проверяем права суперпользователя
-check_sudo
-
-# Проверяем существование директории
-if [ ! -d "/usr/local/bin" ]; then
-    echo -e "${YELLOW}Создаем директорию /usr/local/bin...${NC}"
-    sudo mkdir -p /usr/local/bin
-fi
+# Создаем директорию установки
+create_install_dir
 
 # Копируем файлы
 echo -e "${BLUE}Копирование файлов...${NC}"
-sudo cp gosms.sh /usr/local/bin/gosms
-sudo cp translations.sh /usr/local/bin/gosms_translations.sh
+if [ "$PLATFORM" = "windows" ]; then
+    cp gosms.sh "$INSTALL_DIR/gosms"
+    cp translations.sh "$INSTALL_DIR/gosms_translations.sh"
+else
+    sudo cp gosms.sh "$INSTALL_DIR/gosms"
+    sudo cp translations.sh "$INSTALL_DIR/gosms_translations.sh"
+fi
 
 # Устанавливаем права
 echo -e "${BLUE}Установка прав доступа...${NC}"
-sudo chmod 755 /usr/local/bin/gosms
-sudo chmod 755 /usr/local/bin/gosms_translations.sh
+if [ "$PLATFORM" = "windows" ]; then
+    chmod 755 "$INSTALL_DIR/gosms"
+    chmod 755 "$INSTALL_DIR/gosms_translations.sh"
+else
+    sudo chmod 755 "$INSTALL_DIR/gosms"
+    sudo chmod 755 "$INSTALL_DIR/gosms_translations.sh"
+fi
 
 # Очищаем временную директорию
 rm -rf "$TEMP_DIR"
