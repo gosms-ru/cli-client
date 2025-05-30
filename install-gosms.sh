@@ -43,7 +43,7 @@ if [ -t 0 ]; then
 else
     # Скрипт запущен через pipe
     echo "Для корректной работы установщика, пожалуйста, выполните следующие команды:"
-    echo "curl -sSL https://raw.githubusercontent.com/gosms-ru/cli-client/main/install-gosms.sh -o install-gosms.sh"
+    echo "curl -sSL https://raw.githubusercontent.com/gosms-ru/cli-client/developer/install-gosms.sh -o install-gosms.sh"
     echo "chmod +x install-gosms.sh"
     echo "./install-gosms.sh"
     exit 1
